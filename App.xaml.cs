@@ -2,11 +2,11 @@
 
 public partial class App : Application
 {
+    bool hasPushed = false;
 	public App()
 	{
-        MR.Gestures.Border b = new MR.Gestures.Border();
-        b.BackgroundColor = Colors.Green;
-        b.Up += async (a, b) =>
+        MR.Gestures.Button bMG = new MR.Gestures.Button() { Text = "MR. Gestures Button - Push Page" };
+        bMG.Up += async (a, b) =>
         {
             ContentPage cp2 = null;
             var b1 = new Button() { Text = "Back" };
@@ -25,17 +25,63 @@ public partial class App : Application
 
         };
 
+
+        var bStock = new Button() { Text = "Stock Maui Button - Push Page" };
+        bStock.Clicked += async (a, b) =>
+        {
+            if (!hasPushed)
+            {
+                hasPushed = true;
+                ContentPage cp2 = null;
+                var b1 = new Button() { Text = "Back" };
+                b1.Clicked += async (a, b) =>
+                {
+                    var np = MainPage as NavigationPage;
+                    await np.Navigation.PopAsync();
+                };
+                cp2 = new ContentPage()
+                {
+                    Content = b1
+                };
+
+                var np = MainPage as NavigationPage;
+                await np.Navigation.PushAsync(cp2, true);
+            }
+            else
+            {
+                //Readd event handler as a test on MR Gestures Button.  This then works.
+                bMG.Clicked += async (a, b) =>
+                {
+                    ContentPage cp2 = null;
+                    var b1 = new Button() { Text = "Back" };
+                    b1.Clicked += async (a, b) =>
+                    {
+                        var np = MainPage as NavigationPage;
+                        await np.Navigation.PopAsync();
+                    };
+                    cp2 = new ContentPage()
+                    {
+                        Content = b1
+                    };
+
+                    var np = MainPage as NavigationPage;
+                    await np.Navigation.PushAsync(cp2, true);
+                };
+            }
+
+           
+        };
         var cp = new ContentPage()
         {
-            Content = b
+            Content = new StackLayout()
+            {
+                Children =
+                {
+                    bStock,
+                    bMG
+                }
+            }
         };
-
-
-
-        /*App.MainPage = new CodeMarkup.Maui.NavigationPage()
-        {
-            p
-        };*/
         MainPage = new NavigationPage(cp);
     }
 }
